@@ -1,0 +1,134 @@
+<!-- Base definition of HTML file -->
+<!DOCTYPE html>
+  <!-- Section where imports neccessary JS scripts that will be used -->
+  <head>
+    <!-- Define viewport settings for device -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Use encoding standard UTF-8 -->
+    <meta charset="utf-8">
+    <!-- Title of website which will be shown at the tab bar -->
+    <title>Task 4 - Vladimir Fedin (9211508)</title>
+    <!-- Import external script to use React -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <!-- Import external script that neccessary to use React -->
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <!-- Import external compiler script which provides support of JSX syntaxt in React -->
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js" crossorigin></script>
+    <!-- Import styles of Bootstrap library -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin>
+    <!-- Import scripts of Bootstrap library -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin></script>
+  </head>
+  <!-- Section where main website content will be shown. Set grey background color with 100% height and classes to center content -->
+  <body style="height: 100vh; background-color: var(--bs-secondary-bg);" class="container d-flex flex-fill justify-content-center align-items-center">
+    <!-- Root container where React application will be placed -->
+    <div id="root"></div>
+    <!-- Main application script which will be compiled by Babel -->
+    <script type="text/babel">
+      // Definition of Main component
+      function Main() {
+        // Set default values for form inputs
+        const [formData, setFormData] = React.useState({
+          principle: undefined,
+          interestRate: undefined,
+          monthsOfPayments: undefined,
+        });
+        // Define function that calculates monthly payment
+        const calculateMonthlyPayment = React.useCallback((principle, interestRate, monthsOfPayments) => {
+          return ((principle / monthsOfPayments) + ((principle * (interestRate * 0.01)) / monthsOfPayments)).toFixed(2);
+        }, []);
+        // Result of monthly payment calculation
+        const monthlyPayment = calculateMonthlyPayment(formData.principle, formData.interestRate, formData.monthsOfPayments);
+        // Result of total return
+        const totalReturn = (monthlyPayment * formData.monthsOfPayments).toFixed(2);
+        // Total overpayment sum
+        const overpayment = (totalReturn - formData.principle).toFixed(2);
+        // Flag to check is form values are valid or not
+        const isFormValid = monthlyPayment > 0 && totalReturn > 0 && overpayment > 0;
+        // Definition on React component in JSX syntax
+        return (
+          // Card element container with Bootstrap styles
+          <div class="card">
+            {/* Card element body */}
+            <div class="card-body">
+              {/* Card title element */}
+              <h5 class="card-title">Mortgage calculator</h5>
+              {/* Card description element  */}
+              <p class="card-text">Fill the form to calculate mortgage repayments</p>
+              {/* Row container element */}
+              <div class="mb-3">
+                {/* Input label */}
+                <label for="principle-input" class="form-label">Mortgage principle</label>
+                {/* Input for mortgage principle that updates form data state on each change */}
+                <input
+                  id="principle-input"
+                  class="form-control"
+                  placeholder="Enter mortgage principle"
+                  value={formData.principle}
+                  onChange={(event) => setFormData({...formData, principle: Number(event.target.value)})}/>
+              </div>
+              {/* Row container element */}
+              <div class="mb-3">
+                {/* Input label */}
+                <label for="interest-rate-input" class="form-label">Interest rate per year</label>
+                {/* Input for interest rate that updates form data state on each change */}
+                <input
+                  id="interest-rate-input"
+                  class="form-control"
+                  placeholder="Enter interest rate in %"
+                  value={formData.interestRate}
+                  onChange={(event) => setFormData({...formData, interestRate: Number(event.target.value)})}/>
+              </div>
+              {/* Row container element */}
+              <div class="mb-3">
+                {/* Input label */}
+                <label for="month-payments-input" class="form-label">Months of payments</label>
+                {/* Input for months of payments that updates form data state on each change */}
+                <input
+                  id="month-payments-input"
+                  class="form-control"
+                  placeholder="Enter amount months of payments"
+                  value={formData.monthsOfPayments}
+                  onChange={(event) => setFormData({...formData, monthsOfPayments: Number(event.target.value)})}/>
+              </div>
+
+              {/* Condition statement in JSX syntax */}
+              {
+                isFormValid && (
+                  // Container element without style, because React required only rendered 1 element in condition statement
+                  <div>
+                    {/* Row container element */}
+                    <div class="mb-3">
+                      {/* Result label */}
+                      <p class="fs-6">Monthly payment</p>
+                      {/* Display result of monthly payment */}
+                      <p class="font-monospace">{monthlyPayment}</p>
+                    </div>
+                    {/* Row container element */}
+                    <div class="mb-3">
+                      {/* Result label */}
+                      <p class="fs-6">Total return</p>
+                      {/* Display result of total return */}
+                      <p class="font-monospace">{totalReturn}</p>
+                    </div>
+                    {/* Row container element */}
+                    <div class="mb-3">
+                      {/* Result label */}
+                      <p class="fs-6">Overpayment</p>
+                      {/* Display result of overpayment */}
+                      <p class="font-monospace">{overpayment}</p>
+                    </div>
+                  </div>
+                )
+              }
+            </div>
+          </div>
+        );
+      }
+      // Selection of root element where Main will be placed
+      const root = ReactDOM.createRoot(document.querySelector('#root'));
+      // Render of Main component
+      root.render(<Main/>);
+    </script>
+  </body>
+</html>
