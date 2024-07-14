@@ -1,0 +1,268 @@
+<!-- Base definition of HTML file -->
+<!DOCTYPE html>
+  <!-- Section where imports neccessary JS scripts that will be used -->
+  <head>
+    <!-- Define viewport settings for device -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Use encoding standard UTF-8 -->
+    <meta charset="utf-8">
+    <!-- Title of website which will be shown at the tab bar -->
+    <title>Task 6 - Vladimir Fedin (9211508)</title>
+    <!-- Import external script to use React -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <!-- Import external script that neccessary to use React -->
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <!-- Import external compiler script which provides support of JSX syntaxt in React -->
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js" crossorigin></script>
+    <!-- Import styles of Bootstrap library -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin>
+    <!-- Import scripts of Bootstrap library -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin></script>
+  </head>
+  <!-- Section where main website content will be shown. Set grey background color with 100% height and classes to center content -->
+  <body style="height: 100vh; background-color: var(--bs-secondary-bg);" class="container d-flex flex-fill justify-content-center align-items-center">
+    <!-- Root container where React application will be placed -->
+    <div id="root"></div>
+    <!-- Main application script which will be compiled by Babel -->
+    <script type="text/babel">
+      // Import neccessary methods from React
+      const {useState, useRef, useEffect, useCallback} = React;
+      // Definition of NewProductModal component
+      function NewProductModal({modalRef, onNewProductHandler}) {
+        // Set default values for form inputs
+        const [formData, setFormData] = useState({
+          name: undefined,
+          price: undefined,
+          quantity: undefined,
+        });
+        // Close modal handler
+        const closeModal = useCallback(() => {
+          // Hide modal using bootstrap methods
+          bootstrap.Modal
+            .getOrCreateInstance(modalRef.current, {})
+            .hide();
+          // Set empty string to reset current values in inputs
+          setFormData({
+            name: '',
+            price: '',
+            quantity: '',
+          });
+        // Recreate method when used variables have been updated
+        }, [modalRef]);
+        // Method to handle product creation
+        const saveNewProduct = useCallback(() => {
+          // Call methods to close modal window
+          closeModal();
+          // Use callback to send product data to Main component
+          onNewProductHandler(formData);
+        // Recreate method when used variables have been updated
+        }, [closeModal, formData]);
+        // Render component
+        return (
+          <div
+            // Pass reference to HTML element for future interaction
+            ref={modalRef}
+            // Use modal styles with fade animation
+            class="modal fade"
+            // Do not hide modal when clicking at the backdrop
+            data-bs-backdrop="static"
+          >
+            {/* Modal container definition with centered position and scrollable content */}
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+              {/* Content container */}
+              <div class="modal-content">
+                {/* Header element of modal */}
+                <div class="modal-header">
+                  {/* Title of modal with bold font */}
+                  <h1 class="modal-title fs-5">Add new computer component</h1>
+                  {/* Button that closes modal window */}
+                  <button
+                    type="button"
+                    class="btn-close"
+                    aria-label="Close"
+                    // Handler method that closes modal window
+                    onClick={closeModal}
+                  ></button>
+                </div>
+                {/* Body of modal element */}
+                <div class="modal-body">
+                  {/* Row container element */}
+                  <div class="mb-3">
+                    {/* Input label */}
+                    <label for="name-input" class="form-label">Name</label>
+                    {/* Input for computer component name that updates form data state on each change */}
+                    <input
+                      type="text"
+                      id="name-input"
+                      class="form-control"
+                      placeholder="Enter name of component"
+                      value={formData.name}
+                      onChange={(event) => setFormData({...formData, name: event.target.value})}/>
+                  </div>
+                  {/* Row container element */}
+                  <div class="mb-3">
+                    {/* Input label */}
+                    <label for="price-input" class="form-label">Price</label>
+                    {/* Input for computer component price that updates form data state on each change */}
+                    <input
+                      type="number"
+                      id="price-input"
+                      class="form-control"
+                      placeholder="Enter price per unit"
+                      value={formData.price}
+                      onChange={(event) => setFormData({...formData, price: Number(event.target.value)})}/>
+                  </div>
+                  {/* Row container element */}
+                  <div class="mb-3">
+                    {/* Input label */}
+                    <label for="quantity-input" class="form-label">Quantity</label>
+                    {/* Input for computer component quantity that updates form data state on each change */}
+                    <input
+                      type="number"
+                      id="quantity-input"
+                      class="form-control"
+                      placeholder="Enter quantity of items"
+                      value={formData.quantity}
+                      onChange={(event) => setFormData({...formData, quantity: Number(event.target.value)})}/>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  {/* Handler method that closes modal window */}
+                  <button type="button" class="btn btn-secondary" onClick={closeModal}>Close</button>
+                  {/* Handler method that save new product */}
+                  <button type="button" class="btn btn-primary" onClick={saveNewProduct}>Save changes</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      }
+      // Definition of ProductTable component
+      function ProductTable({columns, data}) {
+        // Get all keys of passed table columns
+        const columnKeys = columns.map(({key}) => key);
+        // Method to render table column
+        const renderColumn = useCallback(({label}) => {
+          return (
+            <th scope="col">{label}</th>
+          );
+        // Recreate method when used variables have been updated. In this case there is no external params
+        }, []);
+        // Method to render table row
+        const renderRow = useCallback((rowData) => {
+          return (
+            <tr>
+              {columnKeys.map((key) => (
+                // Render all column values or display that value is empty
+                <td>{rowData[key] || '-'}</td>
+              ))}
+            </tr>
+          );
+        // Recreate method when used variables have been updated. In this case there is no external params
+        }, []);
+        // Render table
+        return (
+          <table class="table">
+            <thead>
+              {/* Render all columns */}
+              <tr>
+                {columns.map(({label}) => (
+                  <th scope="col">{label}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {/* Render all rows */}
+              {data.map((rowData) => (
+                renderRow(rowData)
+              ))}
+            </tbody>
+          </table>
+        );
+      }
+      // Definition of Main component
+      function Main() {
+        // Define reference to modal HTML element
+        const modalRef = useRef(null);
+        // Define state for modal to track is it open or not
+        const [isModalOpen, setIsModalOpen] = useState(false);
+        // Define default table data for demo
+        const [savedData, setSavedData] = useState([
+          {name: 'CPU', price: 200, quantity: 1},
+          {name: 'Memory', price: 50, quantity: 4},
+          {name: 'Motherboard', price: 80, quantity: 1},
+          {name: 'Monitor', price: 1000, quantity: 2},
+          {name: 'Keyboard', price: 30, quantity: 1},
+          {name: 'Mouse', price: 10, quantity: 1},
+        ]);
+        // Method that opens modal window
+        const openNewProductModal = useCallback(() => {
+          bootstrap.Modal
+            .getOrCreateInstance(modalRef.current, {})
+            .show();
+        // Recreate method when used variables have been updated
+        }, [modalRef]);
+        // Method that handles saving of new added product
+        const handleNewProduct = useCallback((newItem) => {
+          setSavedData([
+            ...savedData,
+            newItem
+          ]);
+        // Recreate method when used variables have been updated
+        }, [savedData]);
+        // Definition of table columns with reference to diplayed key from table data
+        const tableColumns = [
+          {key: 'id', label: '#'},
+          {key: 'name', label: 'Name'},
+          {key: 'price', label: 'Price per unit (€)'},
+          {key: 'quantity', label: 'Quantity'},
+          {key: 'totalPrice', label: 'Total price (€)'},
+        ];
+        // Prepared table data with added id and calculated total price per produect fields
+        const tableData = savedData.map((item, index) => ({
+          ...item,
+          id: index + 1,
+          totalPrice: item.price * item.quantity,
+        }));
+        // Calculate common total price
+        const totalPrice = tableData.reduce((acc, {totalPrice}) => {
+          acc += totalPrice;
+          return acc;
+        }, 0);
+        // Render Main component
+        return (
+          <div class="card">
+            {/* Card element body */}
+            <div class="card-body">
+              {/* Card title element */}
+              <h5 class="card-title">Computer components list</h5>
+              {/* Card description element  */}
+              <p class="card-text">Add new items to calculate computer components order</p>
+              {/* Row container element */}
+              <div class="mb-3">
+                {/* Button that opens modal window to add new product */}
+                <button
+                  type="button"
+                  class="btn btn-outline-primary"
+                  onClick={openNewProductModal}
+                >
+                  Add new component
+                </button>
+              </div>
+              {/* Definition of modal that creates add product */}
+              <NewProductModal modalRef={modalRef} onNewProductHandler={handleNewProduct}/>
+              {/* Definition of product table */}
+              <ProductTable columns={tableColumns} data={tableData}/>
+              {/* Show total price of all components */}
+              <p class="fs-6 text-end">Total price - {totalPrice}€</p>
+            </div>
+          </div>
+        );
+      }
+      // Selection of root element where Main will be placed
+      const root = ReactDOM.createRoot(document.querySelector('#root'));
+      // Render of Main component
+      root.render(<Main/>);
+    </script>
+  </body>
+</html>
